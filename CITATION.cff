@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+title: "GLP-1 PKR Clinical Decision Tool"
+abstract: "Interactive clinical decision support tool implementing the GLP-1 PKR framework — GLP-1 receptor agonist–induced pharmacokinetic recalibration of lipophilic psychotropic medications. Computes expected percentage change in steady-state plasma concentration (%ΔCss) for 31 psychotropic medications across 8 GLP-1 receptor agonist regimens and 0–35% body weight loss, with drug-specific QTc, D3-preferential, and TDM actionability flags."
+authors:
+  - family-names: "Postolache"
+    given-names: "Teodor T."
+    name-suffix: "MD"
+    orcid: "https://orcid.org/0000-0001-6056-4244"
+    affiliation: "University of Maryland School of Medicine"
+    email: "tpostolache@som.umaryland.edu"
+  # Co-authors will be added after manuscript acceptance to match the final published author list.
+contact:
+  - family-names: "Postolache"
+    given-names: "Teodor T."
+    affiliation: "University of Maryland School of Medicine"
+    email: "tpostola@som.umaryland.edu"
+version: "2.9.0"
+date-released: "2026-04-17"
+license: "MIT"
+type: "software"
+keywords:
+  - GLP-1 receptor agonist
+  - pharmacokinetic recalibration
+  - psychotropic medications
+  - therapeutic drug monitoring
+  - clinical decision support
+  - redistribution
+  - obesity pharmacotherapy
+  - psychiatry
+repository-code: "https://github.com/teopostolache/glp1-pkr-tool"
+url: "https://teopostolache.github.io/glp1-pkr-tool/"
+message: "If you use this tool, please cite both the software and the companion manuscript."
+preferred-citation:
+  type: article
+  title: "GLP-1 Receptor Agonist–Induced Pharmacokinetic Recalibration of Lipophilic Psychotropic Medications: Framework, Algorithm, and Clinical Tool"
+  authors:
+    - family-names: "Postolache"
+      given-names: "Teodor T."
+  journal: "Translational Psychiatry"
+  year: 2026
+  # doi: "10.1038/s41398-..."   # add after manuscript acceptance
