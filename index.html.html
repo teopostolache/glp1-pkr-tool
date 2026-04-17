@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GLP-1 PKR Clinical Decision Tool v2</title>
+<style>
+  :root {
+    --blue:#1F4E79; --blue2:#2E5F8A; --blue3:#EBF0F8; --blue4:#D9E8F4;
+    --green:#0F6E56; --green-bg:#E8F5E9;
+    --amber:#854F0B; --amber-bg:#FFF8E1;
+    --orange:#C05000; --orange-bg:#FFF3CD;
+    --red:#A32D2D; --red-bg:#FCEBEB;
+    --gray:#444441; --gray-bg:#F8F7F4;
+    --purple:#3C3489; --purple-bg:#EEEDFE;
+    --teal:#0F6E56; --teal-bg:#E1F5EE;
+    --border:#DDDDDD; --text:#222; --text2:#555; --text3:#888;
+    --bg:#FFFFFF; --card:#FAFAF8; --radius:8px;
+  }
+  @media(prefers-color-scheme:dark){
+    :root{
+      --blue:#85B7EB; --blue2:#A8C8F0; --blue3:#1A2A3A; --blue4:#1E3450;
+      --green:#5DCAA5; --green-bg:#0A2E20;
+      --amber:#EF9F27; --amber-bg:#2A1E00;
+      --orange:#F5A623; --orange-bg:#2A1800;
+      --red:#F09595; --red-bg:#2E0A0A;
+      --gray:#B4B2A9; --gray-bg:#222220;
+      --purple:#AFA9EC; --purple-bg:#1A1840;
+      --teal:#5DCAA5; --teal-bg:#0A2E20;
+      --border:#333330; --text:#E8E6E0; --text2:#A8A69E; --text3:#666660;
+      --bg:#1A1A18; --card:#222220;
+    }
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
+       font-size:15px;color:var(--text);background:var(--bg);
+       max-width:780px;margin:0 auto;padding:16px 20px 60px}
+  h1{font-size:17px;font-weight:600;color:var(--blue);line-height:1.3;margin-bottom:3px}
+  h2{font-size:12px;font-weight:600;color:var(--blue2);text-transform:uppercase;
+     letter-spacing:.05em;margin:16px 0 6px}
+  .tagline{font-size:12px;color:var(--text3);margin-bottom:12px;font-style:italic}
+  .pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+  .pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+  .pill-blue{background:var(--blue3);color:var(--blue)}
+  .pill-teal{background:var(--teal-bg);color:var(--teal)}
+  .pill-v{background:var(--purple-bg);color:var(--purple)}
+  .sep{height:1px;background:var(--border);margin:14px 0}
+  label.lbl{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px}
+  select,input[type=number]{width:100%;height:40px;padding:0 12px;
+    border:1px solid var(--border);border-radius:var(--radius);
+    background:var(--bg);color:var(--text);font-size:14px;
+    -webkit-appearance:none;appearance:none}
+  select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23888' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+  .row2{display:grid;grid-template-columns:1fr 120px;gap:10px;align-items:center}
+  input[type=range]{width:100%;accent-color:var(--blue);cursor:pointer;margin-top:10px}
+  .sub-note{font-size:12px;color:var(--text3);margin-top:5px;line-height:1.5}
+  .agent-info{background:var(--blue3);border:1px solid var(--blue2);border-radius:var(--radius);
+    padding:10px 14px;margin:10px 0;font-size:12px;color:var(--blue);line-height:1.6;display:none}
+  .agent-info.show{display:block}
+  .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0}
+  .g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin:10px 0}
+  .card{border-radius:var(--radius);padding:12px 14px;border:1px solid var(--border);background:var(--card)}
+  .card.green{background:var(--green-bg);border-color:var(--green)}
+  .card.yellow{background:#FFFDE7;border-color:#C8A800}
+  .card.orange{background:var(--orange-bg);border-color:var(--orange)}
+  .card.red{background:var(--red-bg);border-color:var(--red)}
+  .card.gray{background:var(--gray-bg);border-color:var(--border)}
+  .card.teal{background:var(--teal-bg);border-color:var(--teal)}
+  .ct{font-size:11px;font-weight:600;margin-bottom:3px}
+  .ct.green{color:var(--green)}.ct.yellow{color:#9A8000}
+  .ct.orange{color:var(--orange)}.ct.red{color:var(--red)}
+  .ct.gray{color:var(--text2)}.ct.teal{color:var(--teal)}
+  .big{font-size:26px;font-weight:600;line-height:1;margin:4px 0}
+  .big.green{color:var(--green)}.big.yellow{color:#9A8000}
+  .big.orange{color:var(--orange)}.big.red{color:var(--red)}.big.gray{color:var(--text2)}
+  .sn{font-size:11px;color:var(--text3);margin-top:2px}
+  .delta-row{display:flex;align-items:center;gap:6px;margin-top:6px;
+    font-size:12px;color:var(--text3)}
+  .delta-plus{color:var(--orange);font-weight:600}
+  .action-card{border-radius:var(--radius);padding:12px 16px;border:1px solid;margin:8px 0}
+  .action-card h3{font-size:14px;font-weight:600;margin-bottom:6px}
+  .action-card p{font-size:13px;line-height:1.55;color:var(--text)}
+  ul.fl,ul.ri{list-style:none;padding:0;margin:4px 0}
+  ul.fl li,ul.ri li{display:flex;gap:10px;padding:7px 0;
+    border-bottom:1px solid var(--border);font-size:13px;line-height:1.45}
+  ul.fl li:last-child,ul.ri li:last-child{border-bottom:none}
+  .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+  .dg{background:var(--green)}.da{background:var(--orange)}
+  .dr{background:var(--red)}.dp{background:var(--purple)}
+  .badge{display:inline-block;font-size:11px;font-weight:600;
+    padding:3px 9px;border-radius:20px;margin:2px}
+  .b-dcar{background:var(--purple-bg);color:var(--purple)}
+  .b-d3{background:var(--teal-bg);color:var(--teal)}
+  .b-qtc{background:var(--red-bg);color:var(--red)}
+  .b-cyp{background:var(--amber-bg);color:var(--amber)}
+  .b-tdm{background:var(--blue3);color:var(--blue)}
+  .b-lag{background:var(--gray-bg);color:var(--gray)}
+  .placeholder{text-align:center;padding:28px 20px;color:var(--text3);font-size:14px}
+  .placeholder span{display:block;font-size:32px;margin-bottom:8px;opacity:.4}
+  .fn{font-size:11px;color:var(--text3);line-height:1.6;
+    margin-top:12px;padding-top:10px;border-top:1px solid var(--border)}
+  .donot{background:var(--red-bg);border:1px solid var(--red);
+    border-radius:var(--radius);padding:12px 16px;margin-top:8px}
+  .donot h4{font-size:12px;font-weight:700;color:var(--red);
+    margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+  .donot ul{list-style:none;padding:0}
+  .donot ul li{font-size:12px;color:var(--red);padding:3px 0;line-height:1.4}
+  .donot ul li::before{content:'✗  '}
+  .formula-box{background:var(--blue3);border:1px solid var(--blue2);
+    border-radius:var(--radius);padding:10px 14px;margin:10px 0;
+    font-size:12px;color:var(--blue);line-height:1.7}
+  .formula-box code{font-family:monospace;font-size:12px;font-weight:600}
+  .citation{font-size:11px;color:var(--text3);text-align:center;
+    padding-top:20px;font-style:italic}
+  .warn-tag{display:inline-block;background:var(--orange-bg);color:var(--orange);
+    font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;margin-left:6px}
+
+  .chips{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 0 0}
+  .chip{display:inline-block;font-size:10.5px;font-weight:600;
+    padding:2px 9px;border-radius:20px;border:1px solid;line-height:1.5}
+  .chip-qtc-high{background:#FCEBEB;color:#A32D2D;border-color:#A32D2D}
+  .chip-qtc-moderate{background:#FFF3CD;color:#854F0B;border-color:#C09000}
+  .chip-qtc-low{background:#E8F5E9;color:#0F6E56;border-color:#0F6E56}
+  .chip-d3-yes{background:#EEEDFE;color:#3C3489;border-color:#3C3489}
+  .chip-d3-no{background:#F1EFE8;color:#5F5E5A;border-color:#B4B2A9}
+  @media(prefers-color-scheme:dark){
+    .chip-qtc-high{background:#3E0A0A;color:#F09595}
+    .chip-qtc-moderate{background:#3A2600;color:#EF9F27}
+    .chip-qtc-low{background:#0A2E20;color:#5DCAA5}
+    .chip-d3-yes{background:#1A1840;color:#AFA9EC}
+    .chip-d3-no{background:#222220;color:#B4B2A9}
+  }
+
+  .chip-tdm-strongly_recommended{background:#E8F5E9;color:#0F6E56;border-color:#0F6E56}
+  .chip-tdm-recommended{background:#E1F5EE;color:#0F6E56;border-color:#5DCAA5}
+  .chip-tdm-limited{background:#FFF8E1;color:#854F0B;border-color:#C09000}
+  .chip-tdm-provisional{background:#FFF3CD;color:#854F0B;border-color:#EF9F27}
+  .chip-tdm-not_useful{background:#F1EFE8;color:#5F5E5A;border-color:#B4B2A9}
+  @media(prefers-color-scheme:dark){
+    .chip-tdm-strongly_recommended{background:#0A2E20;color:#5DCAA5}
+    .chip-tdm-recommended{background:#0A2E20;color:#9FE1CB}
+    .chip-tdm-limited{background:#2A1E00;color:#EF9F27}
+    .chip-tdm-provisional{background:#3A2600;color:#FAC775}
+    .chip-tdm-not_useful{background:#222220;color:#B4B2A9}
+  }
+  .tdm-note{background:var(--amber-bg);border:1px solid var(--amber);
+    border-radius:var(--radius);padding:10px 14px;margin:10px 0;
+    font-size:12px;color:var(--amber);line-height:1.55}
+  .tdm-note.critical{background:var(--gray-bg);border-color:var(--text2);color:var(--text)}
+  .tdm-note strong{color:inherit}
+
+  .weight-helper{display:flex;align-items:center;gap:8px;margin-top:8px;
+    font-size:12px;color:var(--text3);flex-wrap:wrap}
+  .weight-helper-label{font-style:italic;white-space:nowrap}
+  .weight-helper select{width:auto;height:30px;font-size:12px;padding:0 22px 0 8px;
+    background-position:right 6px center}
+  .weight-helper input{width:86px;height:30px;font-size:12px;padding:0 8px}
+  .weight-helper-arrow{color:var(--text3);font-size:13px;font-weight:600}
+  @media(max-width:520px){
+    .weight-helper{gap:6px}
+    .weight-helper input{width:72px}
+    .weight-helper-label{flex-basis:100%;margin-bottom:2px}
+  }
+  .dose-row{display:none;margin-top:12px}
+  .dose-row.show{display:block}
+  .dose-row label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px}
+  .dose-target{background:var(--blue3);border:1px solid var(--blue2);
+    border-radius:var(--radius);padding:10px 14px;margin-top:8px;font-size:13px}
+  .dose-target strong{color:var(--blue);font-size:15px}
+
+  .proactive-alert{background:var(--blue3);border:1px solid var(--blue2);border-left:3px solid var(--blue);
+    border-radius:var(--radius);padding:10px 14px;margin:8px 0;
+    font-size:12.5px;color:var(--blue);line-height:1.55}
+  .proactive-alert strong{color:var(--blue);font-weight:600}
+  @media print{
+    body{padding:0;max-width:100%}
+    .no-print{display:none}
+  }
+  @media(max-width:520px){
+    .g3,.g4{grid-template-columns:1fr 1fr}
+    .g3 .card:last-child,.g4 .card:last-child{grid-column:1/-1}
+  }
+</style>
+</head>
+<body>
+
+<h1>GLP-1 PKR Clinical Decision Tool</h1>
+<div class="tagline">GLP-1–Induced Pharmacokinetic Recalibration &nbsp;·&nbsp; v2.9 — graded TDM recommendations + drug-specific proactive alerts (cariprazine, clozapine, lithium, haloperidol) + generic high-risk combo alerts and lean fractions from primary DEXA citations</div>
+<div class="pills">
+  <span class="pill pill-blue">GLP-1 PKR Framework</span>
+  <span class="pill pill-teal">Lean mass corrected</span>
+  <span class="pill pill-v">Version 2.9 · April 2026</span>
+</div>
+
+<div class="sep"></div>
+
+<!-- STEP 1: Drug -->
+<label class="lbl" for="dsel">1 &nbsp; Select psychotropic medication</label>
+<select id="dsel" onchange="updateDrugInfo();calc()">
+  <option value="">— select drug —</option>
+  <optgroup label="▲ TIER 1 — High redistribution risk (log P >3.5)">
+    <option value="Sertraline|1|0.525|">Sertraline</option>
+    <option value="Cariprazine (parent)|1|0.45|dcar,d3">Cariprazine ◆  (parent only; DCAR t½ 1–3 wk)</option>
+    <option value="Haloperidol|1|0.525|qtc">Haloperidol</option>
+    <option value="Chlorpromazine|1|0.525|qtc">Chlorpromazine</option>
+    <option value="Fluphenazine|1|0.525|">Fluphenazine</option>
+    <option value="Aripiprazole|1|0.45|d3,lag">Aripiprazole</option>
+    <option value="Brexpiprazole|1|0.45|d3">Brexpiprazole</option>
+    <option value="Lurasidone|1|0.35|">Lurasidone  †</option>
+    <option value="Fluoxetine|1|0.40|lag">Fluoxetine  (+ norfluoxetine lag)</option>
+    <option value="Paroxetine|1|0.45|">Paroxetine</option>
+    <option value="Amitriptyline|1|0.49|qtc">Amitriptyline</option>
+    <option value="Nortriptyline|1|0.465|qtc">Nortriptyline</option>
+    <option value="Citalopram|1|0.435|qtc">Citalopram</option>
+  </optgroup>
+  <optgroup label="◆ TIER 2 — Moderate risk (log P 2–3.5)">
+    <option value="Clozapine|2|0.30|cyp,tdm">Clozapine  ✦</option>
+    <option value="Olanzapine|2|0.265|cyp">Olanzapine  ✦</option>
+    <option value="Quetiapine|2|0.235|qtc">Quetiapine</option>
+    <option value="Venlafaxine|2|0.29|">Venlafaxine</option>
+    <option value="Escitalopram|2|0.265|qtc">Escitalopram</option>
+    <option value="Carbamazepine|2|0.20|">Carbamazepine</option>
+    <option value="Valproate|2|0.175|">Valproate</option>
+    <option value="Diazepam|2|0.235|">Diazepam</option>
+    <option value="Clonazepam|2|0.20|">Clonazepam</option>
+  </optgroup>
+  <optgroup label="● TIER 3 — Low risk (log P <2)">
+    <option value="Risperidone|3|0.085|">Risperidone</option>
+    <option value="Duloxetine|3|0.095|">Duloxetine  †</option>
+    <option value="Lamotrigine|3|0.095|">Lamotrigine</option>
+    <option value="Lithium|3|0.015|">Lithium</option>
+    <option value="Paliperidone|3|0.07|">Paliperidone</option>
+  </optgroup>
+</select>
+<div id="drug-chips" class="chips" style="display:none"></div>
+
+<div class="dose-row" id="dose-row">
+  <label for="dsdose">&nbsp;&nbsp; <em>Optional:</em> Current daily dose (for target dose calculation)</label>
+  <select id="dsdose" onchange="calc()">
+    <option value="">— skip (show % only) —</option>
+  </select>
+</div>
+
+
+<!-- STEP 2: Agent -->
+<br>
+<label class="lbl" for="asel" style="margin-top:12px">2 &nbsp; GLP-1 receptor agonist prescribed</label>
+<select id="asel" onchange="updateAgentInfo();calc()">
+  <option value="">— select agent —</option>
+  <optgroup label="Tirzepatide (GIP/GLP-1 dual agonist — lean-preserving)">
+    <option value="tirz15|1.592|0.25">Tirzepatide 15 mg  (Zepbound / Mounjaro)</option>
+    <option value="tirz10|1.55|0.25">Tirzepatide 10 mg</option>
+    <option value="tirz5|1.48|0.25">Tirzepatide 5 mg</option>
+  </optgroup>
+  <optgroup label="Semaglutide (GLP-1 agonist)">
+    <option value="sema24|1.287|0.38">Semaglutide 2.4 mg SC  (Wegovy)</option>
+    <option value="sema10|1.00|0.38">Semaglutide 1.0 mg SC  (Ozempic)</option>
+    <option value="sema05|1.00|0.40">Semaglutide 0.5 mg SC  (Ozempic)</option>
+    <option value="osema|0.95|0.38">Oral semaglutide 14 mg  (Rybelsus)</option>
+  </optgroup>
+  <optgroup label="Liraglutide (GLP-1 agonist)">
+    <option value="lira3|0.88|0.38">Liraglutide 3.0 mg  (Saxenda)</option>
+    <option value="lira12|0.62|0.38">Liraglutide 1.2–1.8 mg  (Victoza)</option>
+  </optgroup>
+</select>
+
+<div id="agent-info" class="agent-info"></div>
+
+<!-- STEP 3: Weight loss -->
+<label class="lbl" style="margin-top:12px" for="bwsl">3 &nbsp; Cumulative body weight loss since GLP-1 RA start  <span style="font-weight:400;color:var(--text3);font-size:11px">(as % of pre-treatment weight)</span></label>
+<div class="row2">
+  <input type="range" id="bwsl" min="0" max="35" step="0.5" value="0"
+         oninput="syncBW(this.value);calc()">
+  <div style="display:flex;align-items:center;gap:6px">
+    <input type="number" id="bwn" min="0" max="35" step="0.5" value="0" placeholder="%"
+           oninput="syncBW2(this.value);calc()" style="flex:1;min-width:0">
+    <span style="font-size:14px;font-weight:600;color:var(--text2);white-space:nowrap">%&nbsp;BW</span>
+  </div>
+</div>
+
+<div class="weight-helper">
+  <span class="weight-helper-label">or compute from actual weights:</span>
+  <select id="wunit" onchange="calcWeightLoss()" aria-label="Weight units">
+    <option value="kg">kg</option>
+    <option value="lb">lb</option>
+  </select>
+  <input type="number" id="wbase" placeholder="baseline"
+         min="0" step="0.1" oninput="calcWeightLoss()" aria-label="Baseline weight">
+  <span class="weight-helper-arrow">→</span>
+  <input type="number" id="wnow"  placeholder="current"
+         min="0" step="0.1" oninput="calcWeightLoss()" aria-label="Current weight">
+</div>
+
+<div class="sub-note" style="margin-top:10px">
+  <strong id="bw-echo" style="color:var(--blue)">0.0% body weight lost</strong><span id="wabs-echo" style="color:var(--text3);font-size:11px"></span>
+  <div id="mass-line" style="margin-top:3px">
+    <span id="mass-detail" style="color:var(--text3);font-style:italic">Select a GLP-1 RA agent above to see expected fat and lean mass change</span>
+  </div>
+  <div id="lean-src" style="font-size:11px;color:var(--text3);margin-top:3px"></div>
+</div>
+
+<div class="sep"></div>
+<div id="result">
+  <div class="placeholder"><span>⬡</span>Select drug, agent, and weight loss above</div>
+</div>
+
+<div class="donot no-print" id="donot-box" style="display:none">
+  <h4>Do not</h4>
+  <ul>
+    <li>Attribute new neuropsychiatric symptoms to the GLP-1 RA before obtaining TDM</li>
+    <li>Escalate antipsychotic dose for unconfirmed "anxiety" during fat-loss phase</li>
+    <li>Discontinue the GLP-1 RA as primary response to new psychiatric symptoms</li>
+    <li>Assume no dose change is needed because the prescription has not changed</li>
+  </ul>
+</div>
+
+<script>
+// ── constants ──────────────────────────────────────────────────────────────
+const LBM_FRAC = 0.50; // lean body mass as fraction of total BW (avg SURMOUNT-1 (0.496) and STEP-1 DXA (0.539) baselines; Look et al. 2025, King/Wilding et al. 2021)
+
+const AGENT_DATA = {
+  tirz15:{ name:'Tirzepatide 15 mg', fatF:1.592, leanF:0.25, src:'Look et al. Diabetes Obes Metab 2025 (SURMOUNT-1 DEXA)',
+    note:'GIP/GLP-1 dual agonist. Of total weight lost, ~75% fat and ~25% lean mass (Look M et al., doi:10.1111/dom.16275). Fastest fat-loss trajectory (~0.9–1.1% fat mass/week at peak). Fat anchor: −33.9% fat at −21.3% BW (pooled doses). Lean preservation significantly better than GLP-1–only agents.' },
+  tirz10:{ name:'Tirzepatide 10 mg', fatF:1.55,  leanF:0.25, src:'Estimated from SURMOUNT-1 dose-response (Look et al. 2025)',
+    note:'GIP/GLP-1 dual agonist. Lean fraction assumed ~25% consistent with pooled SURMOUNT-1 data (Look et al. showed consistent proportions across doses: 5mg=25%, 10mg=28%, 15mg=25%). Slightly less total fat loss than 15 mg.' },
+  tirz5:{ name:'Tirzepatide 5 mg',  fatF:1.48,  leanF:0.25, src:'Estimated from SURMOUNT-1 dose-response (Look et al. 2025)',
+    note:'GIP/GLP-1 dual agonist. Lean fraction ~25% consistent with SURMOUNT-1 pooled data. Least total fat loss of tirzepatide doses; lean preservation effect maintained via GIP mechanism.' },
+  sema24:{ name:'Semaglutide 2.4 mg SC', fatF:1.287, leanF:0.38, src:'STEP 1 DXA substudy (Wilding et al. NEJM 2021)',
+    note:'GLP-1 agonist only. No GIP component. Of total WL, ~40% is lean soft tissue and ~60% fat (STEP 1 DXA: 6.9 kg lean, 10.4 kg fat; see Gallagher et al. and Jensterle et al.). Fat anchor: −19.3% fat at −15.0% BW (King/Wilding et al. J Endocr Soc 2021, n=95). Lean correction adds ~10 percentage points to ΔCss vs fat-only model — substantially more than tirzepatide.' },
+  sema10:{ name:'Semaglutide 1.0 mg SC', fatF:1.00,  leanF:0.38, src:'Estimated (no obesity DEXA anchor; lean fraction assumed ~40% per GLP-1–only mechanism)',
+    note:'No dedicated obesity DEXA substudy at this dose. Fat conversion estimated. Lean fraction assumed same as 2.4 mg (no GIP). Total weight loss substantially less than Wegovy dosing.' },
+  sema05:{ name:'Semaglutide 0.5 mg SC', fatF:1.00,  leanF:0.40, src:'Estimated (lean fraction assumed ~40% per GLP-1–only mechanism)',
+    note:'Diabetes-dose semaglutide. Modest weight loss; redistribution risk remains calculable but generally lower tier-action thresholds.' },
+  osema:{ name:'Oral semaglutide 14 mg', fatF:0.95,  leanF:0.38, src:'Estimated (PIONEER trials; no DEXA; lean fraction assumed ~40% per GLP-1–only mechanism)',
+    note:'Lower bioavailability than SC semaglutide. Total WL ~4–5% in PIONEER 1. Fat conversion estimated. Lean fraction assumed same as SC formulation.' },
+  lira3:{ name:'Liraglutide 3.0 mg', fatF:0.88, leanF:0.38, src:'Estimated (SCALE trials; no DEXA substudy; lean fraction assumed ~40% per GLP-1–only mechanism)',
+    note:'GLP-1 agonist only. Mean WL ~8% in SCALE Obesity. No DEXA substudy for fat/lean partition; lean fraction assumed ~27% (consistent with GLP-1-only mechanism). Redistribution risk lower than semaglutide and tirzepatide at typical weight loss.' },
+  lira12:{ name:'Liraglutide 1.2–1.8 mg', fatF:0.62, leanF:0.38, src:'Estimated (lean fraction assumed ~40% per GLP-1–only mechanism; no DEXA data)',
+    note:'Diabetes-dose liraglutide. Modest weight loss (~2–4%). Low redistribution risk at typical WL, but generic availability and use in lower-resourced settings makes baseline TDM important.' },
+};
+
+const TDM_CATEGORIES = {
+  'strongly_recommended':{label:'TDM strongly recommended',note:'Established therapeutic range; routine TDM improves outcomes and is the definitive individual measure during redistribution.'},
+  'recommended':{label:'TDM recommended',note:'Therapeutic range established (AGNP 2017). TDM useful during redistribution for concentration verification, even if not routine outside this context.'},
+  'limited':{label:'TDM of limited value',note:'AGNP 2017 gives only a broad orientation range; concentration-response for efficacy is weak. Useful during redistribution primarily to confirm a large concentration change has occurred; not a precise dose-titration target. Clinical assessment (including suicidality screen for sertraline and fluoxetine) remains the primary monitoring tool.'},
+  'provisional':{label:'TDM provisional — no validated range',note:'AGNP 2017 does not include a validated therapeutic reference range for cariprazine or its active metabolite DCAR. TDM during redistribution is exploratory: useful to document a concentration change from the patient\'s own baseline, but absolute concentration targets are not defined. DCAR assay may not be commercially available.'},
+  'not_useful':{label:'TDM not routinely useful',note:'Benzodiazepines have no clinically actionable TDM target for routine dose optimisation. Tolerance develops, concentration-response is weak for therapeutic effect, and dose titration is clinical. During redistribution, watch for excess sedation, confusion, and falls — treat clinically, not analytically. TDM only for forensic or compliance questions.'},
+};
+
+const DRUG_PROPS = {
+  'Cariprazine':{qtc:'low',d3:true,tdm:'provisional',doses:[1.5,3,4.5,6]},
+  'Brexpiprazole':{qtc:'low',d3:true,tdm:'recommended',doses:[1,2,3,4]},
+  'Aripiprazole':{qtc:'low',d3:true,tdm:'recommended',doses:[5,10,15,20,30]},
+  'Haloperidol':{qtc:'high',d3:false,tdm:'strongly_recommended',doses:[0.5,1,2,5,10,20]},
+  'Chlorpromazine':{qtc:'high',d3:false,tdm:'strongly_recommended',doses:[25,50,100,200,400]},
+  'Fluphenazine':{qtc:'moderate',d3:false,tdm:'strongly_recommended',doses:[1,2.5,5,10]},
+  'Lurasidone':{qtc:'low',d3:false,tdm:'recommended',doses:[20,40,80,120]},
+  'Clozapine':{qtc:'moderate',d3:false,tdm:'strongly_recommended',doses:[12.5,25,50,100,200,300,400]},
+  'Olanzapine':{qtc:'moderate',d3:false,tdm:'strongly_recommended',doses:[2.5,5,10,15,20]},
+  'Quetiapine':{qtc:'moderate',d3:false,tdm:'recommended',doses:[25,50,100,200,300,400,600]},
+  'Ziprasidone':{qtc:'high',d3:false,tdm:'recommended',doses:[20,40,60,80]},
+  'Risperidone':{qtc:'low',d3:false,tdm:'recommended',doses:[0.25,0.5,1,2,3,4,6]},
+  'Paliperidone':{qtc:'low',d3:false,tdm:'recommended',doses:[1.5,3,6,9,12]},
+  'Sertraline':{qtc:'low',d3:false,tdm:'limited',doses:[25,50,100,150,200]},
+  'Amitriptyline':{qtc:'high',d3:false,tdm:'strongly_recommended',doses:[10,25,50,75,100,150]},
+  'Nortriptyline':{qtc:'moderate',d3:false,tdm:'strongly_recommended',doses:[10,25,50,75,100,150]},
+  'Fluoxetine':{qtc:'low',d3:false,tdm:'limited',doses:[10,20,40,60,80]},
+  'Paroxetine':{qtc:'low',d3:false,tdm:'recommended',doses:[10,20,30,40,50]},
+  'Citalopram':{qtc:'high',d3:false,tdm:'recommended',doses:[10,20,30,40]},
+  'Venlafaxine':{qtc:'moderate',d3:false,tdm:'recommended',doses:[37.5,75,150,225,300,375]},
+  'Escitalopram':{qtc:'moderate',d3:false,tdm:'recommended',doses:[5,10,15,20]},
+  'Duloxetine':{qtc:'low',d3:false,tdm:'limited',doses:[20,30,60,90,120]},
+  'Carbamazepine':{qtc:'low',d3:false,tdm:'strongly_recommended',doses:[100,200,400,600,800,1200]},
+  'Valproate':{qtc:'low',d3:false,tdm:'strongly_recommended',doses:[250,500,750,1000,1500,2000]},
+  'Lamotrigine':{qtc:'low',d3:false,tdm:'strongly_recommended',doses:[25,50,100,200,300,400]},
+  'Lithium':{qtc:'low',d3:false,tdm:'strongly_recommended',doses:[300,600,900,1200,1500,1800]},
+  'Diazepam':{qtc:'low',d3:false,tdm:'not_useful',doses:[2,5,10,20,40]},
+  'Clonazepam':{qtc:'low',d3:false,tdm:'not_useful',doses:[0.25,0.5,1,2,4]},
+  'Alprazolam':{qtc:'low',d3:false,tdm:'not_useful',doses:[0.25,0.5,1,2,4]},
+  'Lorazepam':{qtc:'low',d3:false,tdm:'not_useful',doses:[0.5,1,2,4,6]},
+};
+
+
+// ── drug chips + dose options ──────────────────────────────────────────────
+function updateDrugInfo(){
+  const sel = document.getElementById('dsel');
+  const chipsEl = document.getElementById('drug-chips');
+  const doseRow = document.getElementById('dose-row');
+  const doseSel = document.getElementById('dsdose');
+  if(!sel.value){
+    chipsEl.style.display='none';
+    doseRow.className='dose-row';
+    doseSel.innerHTML='<option value="">— skip (show % only) —</option>';
+    return;
+  }
+  const name = sel.value.split('|')[0].replace(' (parent)','');
+  const dp = DRUG_PROPS[name];
+  if(!dp){
+    chipsEl.style.display='none';
+    doseRow.className='dose-row';
+    return;
+  }
+  // QTc chip — always shown
+  const qtcLabels={high:'QTc risk: high',moderate:'QTc risk: moderate',low:'QTc risk: low'};
+  let chipHTML = `<span class="chip chip-qtc-${dp.qtc}">${qtcLabels[dp.qtc]}</span>`;
+  // D3 chip — always shown
+  chipHTML += dp.d3
+    ? `<span class="chip chip-d3-yes">D3-preferential</span>`
+    : `<span class="chip chip-d3-no">not D3-preferential</span>`;
+  // TDM actionability chip — always shown per drug
+  const tdmInfo = TDM_CATEGORIES[dp.tdm];
+  if(tdmInfo){
+    chipHTML += `<span class="chip chip-tdm-${dp.tdm}">${tdmInfo.label}</span>`;
+  }
+  chipsEl.innerHTML = chipHTML;
+  chipsEl.style.display='flex';
+  // Dose dropdown — populate with drug-specific doses
+  let opts = '<option value="">— skip (show % only) —</option>';
+  dp.doses.forEach(d => { opts += `<option value="${d}">${d} mg/day</option>`; });
+  doseSel.innerHTML = opts;
+  doseRow.className = 'dose-row show';
+}
+
+
+// ── weight converter — compute % loss from baseline and current absolute weights ──
+function calcWeightLoss(){
+  const base = parseFloat(document.getElementById('wbase').value);
+  const now  = parseFloat(document.getElementById('wnow').value);
+  const unit = document.getElementById('wunit').value;
+  const absEcho = document.getElementById('wabs-echo');
+  if(!base || !now || base<=0){
+    absEcho.textContent = '';
+    return;
+  }
+  if(now >= base){
+    absEcho.textContent = ' (no loss)';
+    return;
+  }
+  const pct = ((base - now) / base) * 100;
+  // Round to 0.5% precision, clamp to slider range
+  const pctR = Math.min(35, Math.max(0, Math.round(pct*2)/2));
+  const abs  = (base - now).toFixed(1);
+  // Push the computed % into BOTH the slider and the number input
+  const slider = document.getElementById('bwsl');
+  const numIn  = document.getElementById('bwn');
+  slider.value = pctR;
+  numIn.value  = pctR;
+  // Force the browser to re-render the slider thumb position.
+  // Simply setting .value doesn't always move the visual thumb.
+  slider.dispatchEvent(new Event('change', {bubbles:true}));
+  // Write absolute loss into the sub-note alongside % echo
+  absEcho.textContent = ` (≈ ${abs} ${unit} lost)`;
+  updateEstimates(pctR);
+  calc();
+}
+
+function updateAgentInfo(){
+  const sel = document.getElementById('asel');
+  const info = document.getElementById('agent-info');
+  if(!sel.value){ info.className='agent-info'; return; }
+  const key = sel.value.split('|')[0];
+  const ag = AGENT_DATA[key];
+  if(!ag){ info.className='agent-info'; return; }
+  info.innerHTML = `<strong>${ag.name}</strong> &nbsp;·&nbsp; 
+    Fat conversion: ×${ag.fatF} &nbsp;·&nbsp; 
+    Lean fraction of WL: ${(ag.leanF*100).toFixed(0)}% &nbsp;·&nbsp;
+    Source: ${ag.src}<br>
+    <span style="color:var(--blue2)">${ag.note}</span>`;
+  info.className = 'agent-info show';
+}
+
+function syncBW(v){
+  document.getElementById('bwn').value = v;
+  updateEstimates(v);
+  // If user drags the slider manually, clear the absolute-weight echo
+  // because it no longer reflects the current %
+  document.getElementById('wabs-echo').textContent = '';
+}
+function syncBW2(v){
+  v = Math.min(35,Math.max(0,+v||0));
+  document.getElementById('bwsl').value = v;
+  updateEstimates(v);
+  document.getElementById('wabs-echo').textContent = '';
+}
+function updateEstimates(bw){
+  // bw-echo always reflects the current slider value
+  document.getElementById('bw-echo').textContent = `${(+bw).toFixed(1)}% body weight lost`;
+  const sel = document.getElementById('asel');
+  const massDetail = document.getElementById('mass-detail');
+  const leanSrc = document.getElementById('lean-src');
+  if(!sel.value){
+    massDetail.innerHTML = `<em>Select a GLP-1 RA agent above to see expected fat and lean mass change</em>`;
+    massDetail.style.color = 'var(--text3)';
+    leanSrc.textContent = '';
+    return;
+  }
+  const parts = sel.value.split('|');
+  const fatF = +parts[1], leanF = +parts[2];
+  const key = parts[0];
+  const ag = AGENT_DATA[key];
+  const fatLoss = bw * fatF;
+  const leanLossPctBW = bw * leanF;
+  const leanLossPctLBM = leanLossPctBW / LBM_FRAC;
+  massDetail.innerHTML = `Fat mass lost: <strong style="color:var(--text)">${fatLoss.toFixed(1)}%</strong> &nbsp;|&nbsp; Lean mass lost: <strong style="color:var(--text)">${leanLossPctLBM.toFixed(1)}%</strong> of lean mass`;
+  massDetail.style.color = 'var(--text2)';
+  massDetail.style.fontStyle = 'normal';
+  leanSrc.textContent = ag ? ` (${ag.src})` : '';
+}
+
+// ── core formula ───────────────────────────────────────────────────────────
+function pctCss(f_fat, fatLossPct, leanLossPct){
+  // Full corrected formula including lean mass correction
+  // f_lean = 1 - f_fat
+  const f_lean = 1 - f_fat;
+  const denom = 1 - (f_fat * fatLossPct/100) - (f_lean * leanLossPct/100);
+  if(denom <= 0) return 999; // protective
+  return (1/denom - 1)*100;
+}
+function pctCssFatOnly(f_fat, fatLossPct){
+  // Fat-only model (v1) for comparison delta
+  const denom = 1 - f_fat * fatLossPct/100;
+  if(denom <= 0) return 999;
+  return (1/denom - 1)*100;
+}
+
+// ── flags ──────────────────────────────────────────────────────────────────
+const FLAGS = {
+  dcar:{ badge:'b-dcar', label:'DCAR',
+    txt:'Active metabolite DCAR (t½ 1–3 wk): TDM must include both parent and DCAR. Peak concentration excess may lag weeks to months behind fat-loss nadir — monitoring must continue beyond active weight-loss phase.' },
+  d3:{  badge:'b-d3',  label:'D3-selective',
+    txt:'D3-preferential agent: psychological akathisia (inner restlessness, dysphoria, tension) may predominate with absent motor signs. Use BARS subjective subscale (items 2–4) as primary screen. BARS subjective ≥2 = TDM trigger even if motor item = 0.' },
+  qtc:{ badge:'b-qtc', label:'QTc risk',
+    txt:'QTc-prolonging drug: ECG at baseline, after ≥10% BW loss, and before any dose reduction. Non-linear arrhythmia risk above therapeutic range.' },
+  cyp:{ badge:'b-cyp', label:'CYP1A2',
+    txt:'CYP1A2 substrate: weight-loss–driven enzyme induction may partially attenuate concentration increase. Effect is smoking-dependent — do not assume offset without TDM confirmation.' },
+  tdm:{ badge:'b-tdm', label:'Monthly TDM',
+    txt:'Clozapine: monthly TDM is mandatory under standard REMS. GLP-1 PKR monitoring is additive to — not a substitute for — standard clozapine monitoring.' },
+  lag:{ badge:'b-lag', label:'Long t½',
+    txt:'Long active half-life (aripiprazole 75–146 h; norfluoxetine up to 16 d): concentration overshoot may peak 4–6 weeks after maximum fat-loss rate. With tirzepatide\'s faster trajectory, this window is more compressed — early baseline TDM is especially important.' },
+};
+
+function getLevel(css, tdmKey){
+  // When TDM is not useful (benzos) or limited (sertraline/fluoxetine/duloxetine),
+  // action text emphasises clinical monitoring instead of "TDM required"
+  const tdmUseful = !['not_useful','limited','provisional'].includes(tdmKey);
+  const mon = tdmUseful ? 'Obtain serum drug concentration and compare to baseline'
+                        : 'Rely on clinical assessment — TDM is not a reliable guide for this drug';
+  const actVerb = tdmUseful ? 'TDM-guided' : 'clinically guided';
+
+  if(css < 5)  return {c:'green', title:'Standard monitoring — no dose change indicated',
+    action: tdmUseful
+      ? 'Redistribution risk is low at this combination. Establish TDM baseline for Tier 1 drugs if not yet done. Reassess at every further 5% BW loss.'
+      : 'Redistribution risk is low at this combination. Continue standard clinical monitoring; reassess at every further 5% BW loss.'};
+  if(css < 10) return {c:'yellow', title: tdmUseful ? 'Enhanced monitoring — obtain TDM' : 'Enhanced clinical monitoring',
+    action: mon + '. BARS for antipsychotic users. ' + (tdmUseful ? 'No dose change unless TDM confirms excess. ' : 'Watch for clinical signs of excess concentration. ') + 'Reassess at every further 5%.'};
+  if(css < 15) return {c:'orange', title: tdmUseful ? 'TDM + consider 10–15% dose reduction' : 'Consider 10–15% clinical dose reduction',
+    action: (tdmUseful
+      ? 'Obtain TDM where available to guide the decision. If concentration >20% above baseline or in upper 25% of therapeutic range → reduce dose ~10–15%.'
+      : 'Clinical assessment guides the decision. If new sedation, gait instability, cognitive slowing, or dependence escalation → reduce dose ~10–15%.') + ' Continue GLP-1 RA. BARS at every visit where applicable.'};
+  if(css < 20) return {c:'red', title: tdmUseful ? 'TDM + dose reduction likely indicated' : 'Dose reduction likely indicated',
+    action: `Dose reduction strongly supported. Reduce ~15–20% ${actVerb}. Do not attribute new neuropsychiatric symptoms to the GLP-1 RA before ${tdmUseful?'TDM':'clinical assessment'}. Continue GLP-1 RA.`};
+  return {c:'red', title: tdmUseful ? 'TDM + dose reduction strongly indicated' : 'Dose reduction strongly indicated',
+    action: `Concentration excess likely clinically significant. Reduce ~20–27% ${actVerb}. Consider halving dose and retitrating after weight stabilisation. See drug-specific risk alerts below for ECG and akathisia screening requirements.`};
+}
+
+function getRisks(name, tier, flags, css){
+  const items=[];
+  const baseName = name.replace(' (parent)','');
+  const dp = DRUG_PROPS[baseName] || {};
+  const isAP=['Haloperidol','Chlorpromazine','Fluphenazine','Aripiprazole',
+    'Brexpiprazole','Cariprazine','Lurasidone','Clozapine','Olanzapine','Quetiapine','Ziprasidone','Risperidone','Paliperidone'].some(n=>baseName===n);
+  // D3 risk — triggered directly by drug property, not user interpretation
+  if(dp.d3){
+    items.push({d:'dp',t:`${baseName} is D3-preferential. Concentration excess produces predominantly psychological akathisia — inner restlessness, dysphoria, inner tension — with absent or minimal motor signs. BARS subjective subscale (items 2–4) is the primary screening instrument. BARS subjective ≥2 with motor = 0 = TDM trigger.`});
+  } else if(isAP && css>=10){
+    items.push({d:'dr',t:`${baseName} is not D3-preferential: concentration excess is expected to produce classical motor akathisia detectable by BARS objective (item 1). Screen at every visit.`});
+  }
+  // QTc risk — triggered directly by drug property with graded messaging
+  if(dp.qtc==='high'){
+    items.push({d:'dr',t:`${baseName} carries known TdP risk (CredibleMeds classification). Mandatory ECG at baseline, after ≥10% BW loss, and before any dose change. Patients near QTc 450 ms baseline may cross the threshold at this concentration increase.`});
+  } else if(dp.qtc==='moderate'){
+    items.push({d:'da',t:`${baseName} carries conditional QTc prolongation risk (concentration-dependent). ECG at baseline and after ≥10% BW loss is recommended. Check for additive QTc risks (other QTc drugs, electrolyte disturbances, bradycardia).`});
+  } else if(dp.qtc==='low' && isAP){
+    items.push({d:'dg',t:`${baseName} has no published TdP signal at therapeutic concentrations. ECG at baseline is reasonable but not mandated solely on cardiac grounds.`});
+  }
+  // Serotonergic
+  if(['Sertraline','Fluoxetine','Paroxetine','Citalopram','Escitalopram','Venlafaxine','Duloxetine'].some(n=>baseName===n))
+    items.push({d:'da',t:'Serotonergic activation: concentration excess may produce insomnia, agitation, tremor. Pharmacodynamically equivalent to dose escalation — reassess suicidality risk at every TDM visit.'});
+  // Metabolic
+  if(baseName==='Clozapine'||baseName==='Olanzapine')
+    items.push({d:'da',t:`${baseName} rising exposure may attenuate the metabolic benefits of GLP-1 RA therapy and worsen insulin resistance.`});
+  // Overall severity
+  if(css>=15)
+    items.push({d:'dr',t:'At this concentration level sedation, EPS, and clinical toxicity are meaningful risks. Treat new neuropsychiatric symptoms as redistribution until TDM proves otherwise.'});
+  if(!items.length)
+    items.push({d:'dg',t:'Standard class-specific toxicity monitoring. Low redistribution risk at this combination. Reassess at next 5% BW increment.'});
+  return items;
+}
+
+// ── main calculation ───────────────────────────────────────────────────────
+function calc(){
+  const ds = document.getElementById('dsel');
+  const as = document.getElementById('asel');
+  const bw = +document.getElementById('bwsl').value;
+  const area = document.getElementById('result');
+  const dbox = document.getElementById('donot-box');
+
+  if(!ds.value||!as.value){
+    area.innerHTML='<div class="placeholder"><span>⬡</span>Select drug, agent, and weight loss above</div>';
+    dbox.style.display='none';
+    return;
+  }
+
+  const [name,tier,fStr,flagStr] = ds.value.split('|');
+  const aParts = as.value.split('|');
+  const agKey=aParts[0], fatF=+aParts[1], leanF=+aParts[2];
+  const ag = AGENT_DATA[agKey];
+  const f_fat = +fStr;
+  const f_lean = 1 - f_fat;
+
+  const fatLoss = bw * fatF;
+  const leanLossBW = bw * leanF;
+  const leanLossLBM = leanLossBW / LBM_FRAC;
+
+  const css_full = pctCss(f_fat, fatLoss, leanLossLBM);
+  const css_fat  = pctCssFatOnly(f_fat, fatLoss);
+  const css_lean_delta = css_full - css_fat;
+  const dr = css_full/(100+css_full)*100;
+
+  // TDM actionability note — drives whether TDM is recommended/useful for this drug
+  const baseName0 = name.replace(' (parent)','');
+  const dpForTDM = DRUG_PROPS[baseName0] || {};
+  const tdmCat = TDM_CATEGORIES[dpForTDM.tdm];
+  let tdmNoteHTML = '';
+  if(tdmCat){
+    const isCritical = ['limited','provisional','not_useful'].includes(dpForTDM.tdm);
+    const noteClass = isCritical ? 'tdm-note critical' : 'tdm-note';
+    const icon = isCritical ? '⚠' : 'ℹ';
+    tdmNoteHTML = `<div class="${noteClass}">
+      <strong>${icon} ${tdmCat.label}.</strong> ${tdmCat.note}
+    </div>`;
+  }
+
+  const {c,title,action} = getLevel(css_full, dpForTDM.tdm);
+  const flags = (flagStr||'').split(',').filter(Boolean);
+  const tColor = tier==='1'?'var(--red)':tier==='2'?'var(--orange)':'var(--green)';
+  const tLabel = tier==='1'?'Tier 1 — High':tier==='2'?'Tier 2 — Moderate':'Tier 3 — Low';
+
+  let badgesHTML = flags.map(k=>FLAGS[k]?`<span class="badge ${FLAGS[k].badge}">${FLAGS[k].label}</span>`:'').join('');
+  let flagHTML='';
+  if(flags.length){
+    flagHTML='<h2>Drug-specific flags</h2><ul class="fl">';
+    flags.forEach(k=>{const fi=FLAGS[k];if(fi)flagHTML+=`<li><span class="dot dp"></span><span>${fi.txt}</span></li>`;});
+    flagHTML+='</ul>';
+  }
+  const rItems=getRisks(name,tier,flags,css_full);
+  let rHTML='<h2>Clinical risk alerts</h2><ul class="ri">';
+  rItems.forEach(({d,t})=>{rHTML+=`<li><span class="dot ${d}"></span><span>${t}</span></li>`;});
+  rHTML+='</ul>';
+
+  const colors={green:'var(--green)',yellow:'#9A8000',orange:'var(--orange)',red:'var(--red)',gray:'var(--text2)'};
+  const drNote = dr>=5?`<div class="sn">Dose reduction target: ~${dr.toFixed(0)}% (TDM-guided)</div>`:'';
+
+  // Confirmation phrase tied to the drug's TDM actionability — calibrated per category
+  const confirmMap = {
+    'strongly_recommended': 'TDM is the definitive guide for dose adjustment; obtain serum concentration before changing dose where possible.',
+    'recommended':          'TDM is recommended to guide dose adjustment where available.',
+    'limited':              'Clinical assessment should guide dose change — TDM is of limited value for this drug (broad orientation range only).',
+    'provisional':          'Clinical assessment should guide dose change — no validated AGNP concentration target exists for this drug.',
+    'not_useful':           'Clinical assessment (sedation, gait, cognition, dependence) guides dose change — TDM is not routinely useful for this drug.',
+  };
+  const confirmPhrase = confirmMap[dpForTDM.tdm] || 'TDM recommended where available.';
+
+  // Dose target calculation — if user has specified current dose
+  const currentDose = +document.getElementById('dsdose').value;
+  let doseTargetHTML = '';
+  if(currentDose > 0 && dr >= 5){
+    const targetDose = currentDose * (1 - dr/100);
+    // Find the nearest available dose for this drug
+    const baseName2 = name.replace(' (parent)','');
+    const availableDoses = (DRUG_PROPS[baseName2] && DRUG_PROPS[baseName2].doses) || [];
+    let nearestDose = targetDose;
+    if(availableDoses.length){
+      nearestDose = availableDoses.reduce((best, d) =>
+        Math.abs(d - targetDose) < Math.abs(best - targetDose) ? d : best, availableDoses[0]);
+    }
+    doseTargetHTML = `<div class="dose-target">
+      <strong>Target dose estimate:</strong> ${targetDose.toFixed(1)} mg/day
+      ${availableDoses.length ? `&nbsp;&rarr; nearest commercial strength: <strong>${nearestDose} mg/day</strong>` : ''}
+      <div class="sn" style="margin-top:4px">From ${currentDose} mg/day × (1 − ${dr.toFixed(0)}%). ${confirmPhrase}</div>
+    </div>`;
+  }
+
+  // Lean correction display
+  const leanCard = css_lean_delta >= 0.5 ? `
+    <div class="card teal" style="text-align:center">
+      <div class="ct teal">Lean correction</div>
+      <div class="big" style="color:var(--teal);font-size:20px">+${css_lean_delta.toFixed(1)}%</div>
+      <div class="sn">added by sarcopenia<br>${(leanLossLBM).toFixed(1)}% lean mass lost</div>
+    </div>` : `
+    <div class="card" style="text-align:center">
+      <div class="ct gray">Lean correction</div>
+      <div class="big gray" style="font-size:20px">&lt;0.5%</div>
+      <div class="sn">minimal at this<br>weight loss level</div>
+    </div>`;
+
+  // Proactive TDM alert — two-layer logic:
+  //   Layer 1 (drug-specific): fires based on the drug's own clinical rationale,
+  //                             regardless of AGNP category. Cariprazine's DCAR
+  //                             tracking, lithium's hydration issue, clozapine's
+  //                             narrow TI all warrant proactive measurement even
+  //                             when the absolute AGNP target is provisional.
+  //   Layer 2 (generic): high-risk combinations (Tier 1 + ≥10% BW, or css≥15%)
+  //                       fire only when TDM is actionable enough to inform dose.
+  let proactiveHTML = '';
+  const bn = name.replace(' (parent)','');
+  const drugSpecificRationales = {
+    'Cariprazine':  'Active metabolite DCAR accumulates over weeks and peak exposure lags fat-loss nadir. Track parent + DCAR from the patient\'s own baseline every 5% BW decrement — even without a validated absolute AGNP target.',
+    'Clozapine':    'Narrow therapeutic index with seizure risk above 600 ng/mL. Monthly TDM (REMS) should capture the redistribution trajectory — add a visit-anchored measurement at ≥10% BW loss.',
+    'Lithium':      'Narrow therapeutic index; standard lithium level protocol continues. Redistribution risk is low, but GLP-1 RA–related changes in fluid and sodium balance can independently alter lithium — measure proactively.',
+    'Haloperidol':  'Established concentration–akathisia relationship plus known TdP risk: proactive TDM more informative than reactive confirmation, especially at ≥10% BW loss.',
+  };
+  const bwNumeric = +bw;
+  let rationale = null;
+  // Layer 1: drug-specific — always fires when the drug is in the map
+  if (drugSpecificRationales[bn]) {
+    rationale = drugSpecificRationales[bn];
+  }
+  // Layer 2: generic combo — only if Layer 1 didn't already set a rationale
+  if (!rationale) {
+    const tdmIsActionable = ['strongly_recommended','recommended'].includes(dpForTDM.tdm);
+    const highRiskCombo = tier==='1' && bwNumeric >= 10;
+    if (tdmIsActionable && (highRiskCombo || css_full >= 15)) {
+      rationale = highRiskCombo
+        ? 'Tier 1 drug with ≥10% body weight loss: proactive concentration measurement better informs management than waiting for symptoms to appear.'
+        : 'Predicted concentration increase is substantial (≥15%): proactive measurement clarifies whether dose adjustment is warranted.';
+    }
+  }
+  if (rationale) {
+    proactiveHTML = `<div class="proactive-alert">
+      <strong>⚑ Proactive TDM recommended</strong> — ${rationale}
+    </div>`;
+  }
+
+  area.innerHTML = `
+    <div class="formula-box">
+      <strong>Formula applied:</strong> %ΔCss = (1 / (1 − f<sub>fat</sub>·%Δfat/100 − f<sub>lean</sub>·%Δlean/100) − 1) × 100<br>
+      f<sub>fat</sub> = ${f_fat.toFixed(3)} &nbsp;·&nbsp; f<sub>lean</sub> = ${f_lean.toFixed(3)} &nbsp;·&nbsp;
+      Fat loss = ${fatLoss.toFixed(1)}% (×${fatF}) &nbsp;·&nbsp;
+      Lean loss = ${leanLossLBM.toFixed(1)}% of LBM (${(leanF*100).toFixed(0)}% of WL ÷ ${LBM_FRAC} LBM fraction) &nbsp;·&nbsp;
+      Agent: ${ag?ag.name:'—'} &nbsp;·&nbsp; Source: ${ag?ag.src:'—'}
+    </div>
+    <div class="g4">
+      <div class="card ${c}" style="text-align:center">
+        <div class="ct ${c}">Total ΔCss</div>
+        <div class="big ${c}">+${css_full.toFixed(1)}%</div>
+        ${drNote}
+      </div>
+      <div class="card" style="text-align:center">
+        <div class="ct gray">Fat-only ΔCss</div>
+        <div class="big gray" style="font-size:20px">+${css_fat.toFixed(1)}%</div>
+        <div class="sn">without lean correction</div>
+      </div>
+      ${leanCard}
+      <div class="card" style="text-align:center">
+        <div class="ct gray">Risk tier</div>
+        <div style="font-size:16px;font-weight:600;color:${tColor};margin:6px 0;line-height:1.3">${tLabel}</div>
+        <div class="sn">log P stratified</div>
+      </div>
+    </div>
+    ${tdmNoteHTML}
+    ${proactiveHTML}
+    <div class="action-card card ${c}" style="border-color:${colors[c]||'var(--border)'}">
+      <h3 style="color:${colors[c]||'var(--text)'}">⬡ ${title}</h3>
+      <p>${action}</p>
+      ${doseTargetHTML}
+      ${badgesHTML?`<div style="margin-top:8px">${badgesHTML}</div>`:''}
+    </div>
+    ${flagHTML}
+    ${rHTML}
+    <div class="fn">
+      Full formula: %ΔCss = (1/(1 − f_fat·%Δfat/100 − f_lean·%Δlean/100) − 1) × 100 &nbsp;|&nbsp;
+      Fat mass: %BW × agent-specific factor &nbsp;|&nbsp;
+      Lean mass: %BW × lean fraction of WL ÷ 0.50 (LBM fraction of BW, 120 kg reference) &nbsp;|&nbsp;
+      Tirzepatide lean fraction 25%, semaglutide lean fraction ~38% (Look et al. 2025; Wilding/King et al. 2021) &nbsp;|&nbsp;
+      QTc and D3-preferential status shown per drug from CredibleMeds and receptor affinity data &nbsp;|&nbsp;
+      ◆ Cariprazine parent only &nbsp;|&nbsp; † Lean-tissue paradox &nbsp;|&nbsp; ✦ CYP1A2 substrate &nbsp;|&nbsp;
+      All estimates assume constant clearance. TDM is the definitive individual measure.
+    </div>
+  `;
+  dbox.style.display='block';
+}
+</script>
+
+<div class="sep"></div>
+<p class="citation">
+  GLP-1 PKR Framework &nbsp;·&nbsp; [Author et al., Translational Psychiatry, 2026 — in submission] &nbsp;·&nbsp;
+  v2.9 uses DEXA-anchored parameters: tirzepatide fat factor 1.59 (Look et al. 2025), lean 25%; semaglutide 2.4 mg fat factor 1.29 (Wilding/King et al. J Endocr Soc 2021; STEP 1 DXA substudy); semaglutide/liraglutide lean fraction ~38%. LBM fraction 0.50 (pooled SURMOUNT-1 / STEP 1 baseline). &nbsp;·&nbsp;
+  For clinical decision support only. Dose adjustments should be guided by TDM where AGNP 2017 provides a validated therapeutic range, and by clinical assessment where it does not.
+</p>
+
+</body>
+</html>
